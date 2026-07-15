@@ -8,6 +8,6 @@ describe('TotalCounter', () => {
       <TotalCounter totalKm={1234.5} completedKm={1200} projectedKm={34.5} isProjectedRoute />,
     )
     expect(screen.getByText('Approximate match-location travel')).toBeInTheDocument()
-    expect(screen.getByText('1,234.5')).toBeInTheDocument()
+    expect(screen.getByText('1,235')).toBeInTheDocument()
   })
 })

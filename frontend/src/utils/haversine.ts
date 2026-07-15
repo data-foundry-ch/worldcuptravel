@@ -17,5 +17,5 @@ export function haversineKm(
 }
 
 export function formatKm(value: number): string {
-  return value.toLocaleString('en-US', { maximumFractionDigits: 1, minimumFractionDigits: 1 })
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0, minimumFractionDigits: 0 })
 }

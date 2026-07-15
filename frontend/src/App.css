@@ -1,6 +1,7 @@
 :root {
   color-scheme: dark;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 80%;
   line-height: 1.4;
   font-weight: 400;
   color: #e8edf5;
@@ -55,7 +56,7 @@ body {
   top: 1rem;
   bottom: 1rem;
   left: 1rem;
-  max-width: min(360px, calc(100vw - 2rem));
+  max-width: min(288px, calc(100vw - 2rem));
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 0.75rem;
@@ -65,7 +66,7 @@ body {
   top: 1rem;
   right: 1rem;
   text-align: right;
-  max-width: min(420px, calc(100vw - 2rem));
+  max-width: min(336px, calc(100vw - 2rem));
 }
 
 .controls {
@@ -220,8 +221,8 @@ body {
 .logo-slot {
   display: grid;
   place-items: center;
-  width: min(360px, calc(100vw - 2rem));
-  min-height: 86px;
+  width: min(288px, calc(100vw - 2rem));
+  min-height: 69px;
   margin-bottom: 0.65rem;
   padding: 0.9rem;
   background: rgba(8, 12, 18, 0.78);
@@ -245,12 +246,12 @@ body {
 .logo-slot img {
   display: block;
   max-width: 100%;
-  max-height: 72px;
+  max-height: 58px;
   object-fit: contain;
 }
 
 .kpi-panel {
-  width: min(360px, calc(100vw - 2rem));
+  width: min(288px, calc(100vw - 2rem));
   padding: 0.8rem;
   background: rgba(8, 12, 18, 0.78);
   border: 1px solid rgba(120, 140, 170, 0.2);
@@ -457,7 +458,7 @@ body {
 .team-chart__bar {
   --bar-width: 10%;
   display: grid;
-  grid-template-columns: minmax(106px, 0.95fr) minmax(100px, 1.3fr) auto;
+  grid-template-columns: minmax(85px, 0.95fr) minmax(80px, 1.3fr) auto;
   align-items: center;
   gap: 0.55rem;
   width: 100%;
@@ -567,7 +568,7 @@ body {
 
 .year-chart-panel {
   position: fixed;
-  left: calc(1rem + 360px + 0.75rem);
+  left: calc(1rem + 288px + 0.75rem);
   right: 1rem;
   bottom: 1rem;
   z-index: 2;
@@ -625,10 +626,10 @@ body {
 
 .year-chart__bars {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(14px, 1fr));
   align-items: end;
   gap: 0.28rem;
-  height: 120px;
+  height: 96px;
 }
 
 .year-chart__bar {
@@ -747,7 +748,7 @@ th {
 }
 
 .drawer {
-  width: min(420px, 100vw);
+  width: min(336px, 100vw);
   background: #0b1016;
   border-left: 1px solid rgba(120, 140, 170, 0.25);
   padding: 1rem;
@@ -807,7 +808,7 @@ th {
 
   .year-chart__bars {
     gap: 0.18rem;
-    height: 92px;
+    height: 74px;
   }
 
   .year-chart__label {

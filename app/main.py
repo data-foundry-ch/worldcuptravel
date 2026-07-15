@@ -86,6 +86,9 @@ def _setup_static_files() -> None:
     async def spa_fallback(full_path: str) -> FileResponse:
         if full_path.startswith("api/") or full_path == "healthz":
             raise HTTPException(status_code=404, detail="Not found")
+        static_file = dist / full_path
+        if static_file.is_file():
+            return FileResponse(static_file)
         index = dist / "index.html"
         if not index.exists():
             raise HTTPException(status_code=404, detail="Frontend not built")
