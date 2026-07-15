@@ -96,17 +96,23 @@ git branch -M main
 git remote add origin https://github.com/<your-user-or-org>/<your-repo>.git
 ```
 
-Make sure these deploy-critical files are committed:
+Make sure the full application source is committed. The `.gitignore` keeps generated runtime files out, while allowing the required bootstrap database and public assets:
 
 ```powershell
 git status --short
-git add .dockerignore .gitignore Dockerfile start.sh app/services/data_refresh.py docs/deployment-render.md README.md
-git add data/bootstrap/worldcup.duckdb frontend/public/earth_at_night.jpg frontend/public/logo.png
-git commit -m "Prepare Render deployment"
+git add .
+git status --short
+git commit -m "Add World Cup Travel Atlas application"
 git push
 ```
 
-`frontend/dist` should not be committed; Docker builds it.
+Confirm these files are included before pushing:
+
+```powershell
+git ls-files render.yaml Dockerfile start.sh .dockerignore pyproject.toml frontend/package.json app/main.py analytics/dbt_project.yml data/bootstrap/worldcup.duckdb frontend/public/earth_at_night.jpg frontend/public/logo.png
+```
+
+`frontend/dist`, `frontend/node_modules`, `.venv`, `data/raw`, `data/working`, `data/worldcup.duckdb`, and generated `reports` should not be committed. Docker builds the frontend and uses `data/bootstrap/worldcup.duckdb` as the cold-start database.
 
 ### 4. Create the Render Blueprint
 

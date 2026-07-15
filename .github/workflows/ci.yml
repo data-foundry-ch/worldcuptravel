@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint Python
+        run: ruff check app tests scripts
+
+      - name: Typecheck Python
+        run: mypy app
+
+      - name: Prepare fixture ingestion
+        run: |
+          mkdir -p data/raw/worldcups/1930 data/raw/worldcups/2026 data/working
+          cp tests/fixtures/worldcups/1930/worldcup.json data/raw/worldcups/1930/
+          cp tests/fixtures/worldcups/2026/worldcup.json data/raw/worldcups/2026/
+          python scripts/ingest.py --local-only
+
+      - name: Build venue seed (fixture subset)
+        run: |
+          python scripts/build_full_venue_seed.py || true
+          python scripts/venues_report.py || true
+
+      - name: dbt build (fixture)
+        env:
+          DUCKDB_PATH: data/worldcup.duckdb
+          MATCHES_PARQUET_PATH: data/working/matches.parquet
+        run: dbt build --project-dir analytics --profiles-dir analytics
+
+      - name: Python tests
+        run: pytest tests -q
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci || npm install
+
+      - name: Frontend lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Frontend unit tests
+        working-directory: frontend
+        run: npm run test
+
+      - name: Frontend production build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Docker build
+        run: docker build -t worldcup-travel-atlas:ci .

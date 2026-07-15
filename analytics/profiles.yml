@@ -1,0 +1,7 @@
+worldcup_travel_atlas:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../data/worldcup.duckdb') }}"
+      threads: 4

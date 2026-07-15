@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: openfootball
+    schema: main
+    tables:
+      - name: matches_parquet
+        meta:
+          external_location: "../data/working/matches.parquet"

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: worldcup-travel-atlas
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /healthz
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: OPENFOOTBALL_GITHUB_REF
+        value: master
+      - key: REFRESH_DATA_ON_START
+        value: "true"
+      - key: DATA_FRESHNESS_WARNING_HOURS
+        value: "36"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DUCKDB_PATH
+        value: /tmp/worldcup.duckdb
+      - key: DUCKDB_BASELINE_PATH
+        value: /app/data/bootstrap/worldcup.duckdb

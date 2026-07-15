@@ -1,0 +1,42 @@
+name: worldcup_travel_atlas
+version: 1.0.0
+config-version: 2
+profile: worldcup_travel_atlas
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+
+vars:
+  earth_radius_km: 6371.0088
+
+models:
+  worldcup_travel_atlas:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  worldcup_travel_atlas:
+    venue_coordinates:
+      +column_types:
+        tournament_year: integer
+        latitude: double
+        longitude: double
+    venue_aliases:
+      +column_types:
+        tournament_year: integer
+    team_aliases:
+      +column_types:
+        tournament_year: integer

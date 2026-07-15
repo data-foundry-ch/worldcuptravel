@@ -14,6 +14,7 @@ htmlcov/
 node_modules/
 frontend/dist/
 frontend/.vite/
+*.tsbuildinfo
 
 # Data (runtime downloads)
 data/raw/worldcups/
@@ -28,6 +29,7 @@ analytics/dbt_packages/
 analytics/logs/
 
 # Reports (generated)
+reports/
 reports/unmapped_venues.csv
 reports/venue_coverage.json
 

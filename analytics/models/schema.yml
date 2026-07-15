@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_world_cup_matches
+    columns:
+      - name: match_id
+        tests: [unique, not_null]
+      - name: tournament_year
+        tests: [not_null]
+      - name: team1_name
+        tests: [not_null]
+      - name: team2_name
+        tests: [not_null]
+
+  - name: stg_venue_coordinates
+    columns:
+      - name: coordinate_precision
+        tests:
+          - accepted_values:
+              values: ['stadium', 'city', 'metro', 'approximate', 'unresolved']
+
+  - name: fct_team_match_appearances
+    columns:
+      - name: match_id
+        tests: [not_null]
+      - name: tournament_year
+        tests: [not_null]
+      - name: team_id
+        tests: [not_null]
+      - name: sequence_number
+        tests: [not_null]
+
+  - name: fct_team_travel_legs
+    columns:
+      - name: leg_number
+        tests: [not_null]
+      - name: tournament_year
+        tests: [not_null]
+      - name: team_id
+        tests: [not_null]
+
+  - name: dim_venues
+    columns:
+      - name: venue_id
+        tests: [not_null]
