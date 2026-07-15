@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Data (runtime downloads)
+data/raw/worldcups/
+data/working/
+data/worldcup.duckdb
+data/worldcup.duckdb.tmp
+data/runtime/
+
+# dbt
+analytics/target/
+analytics/dbt_packages/
+analytics/logs/
+
+# Reports (generated)
+reports/unmapped_venues.csv
+reports/venue_coverage.json
+
+# Environment
+.env
+.env.local
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/
+
+# Bootstrap copy for Docker (generated)
+data/bootstrap/worldcup.duckdb
+!data/bootstrap/
+!data/bootstrap/worldcup.duckdb
