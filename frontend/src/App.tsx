@@ -31,7 +31,7 @@ import './App.css'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
 })
-const DEFAULT_SCOPE = 'played' as const
+const DEFAULT_SCOPE = 'all' as const
 const DEFAULT_YEAR = 2026
 const MOVEMENT_DETAIL_METRICS: TravelKpiMetric[] = ['longestLeg', 'locationCount', 'mostRepeatedRoute']
 

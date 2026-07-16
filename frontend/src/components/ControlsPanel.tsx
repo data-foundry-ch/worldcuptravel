@@ -39,7 +39,9 @@ export function ControlsPanel({
         {year === 'all' ? 'All World Cups' : `World Cup ${year ?? '—'}`}
       </p>
       <p className="controls__selected-team">
-        {team ? 'Team route selected' : 'Showing all team movements'}
+        {team
+          ? 'Team route selected (includes scheduled matches)'
+          : 'Showing all team movements (includes scheduled matches)'}
       </p>
 
       <div className="controls__actions">
