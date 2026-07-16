@@ -149,21 +149,17 @@ function buildAllYearsTeamEntries(
         null,
       )
       const value =
-        selectedMetric === 'totalTravel'
+        selectedMetric === 'totalTravel' || selectedMetric === 'averageTravel'
           ? aggregate.totalKm
-          : selectedMetric === 'averageTravel'
-            ? aggregate.tournamentYears.size > 0
-              ? aggregate.totalKm / aggregate.tournamentYears.size
+          : selectedMetric === 'averageLeg'
+            ? aggregate.legCount > 0
+              ? aggregate.totalKm / aggregate.legCount
               : 0
-            : selectedMetric === 'averageLeg'
-              ? aggregate.legCount > 0
-                ? aggregate.totalKm / aggregate.legCount
-                : 0
-              : selectedMetric === 'longestLeg'
-                ? (aggregate.longestLeg?.distanceKm ?? 0)
-                : selectedMetric === 'locationCount'
-                  ? aggregate.locations.size
-                  : (mostRepeatedRoute?.count ?? 0)
+            : selectedMetric === 'longestLeg'
+              ? (aggregate.longestLeg?.distanceKm ?? 0)
+              : selectedMetric === 'locationCount'
+                ? aggregate.locations.size
+                : (mostRepeatedRoute?.count ?? 0)
 
       return {
         teamId: aggregate.teamId,
@@ -234,7 +230,8 @@ function Dashboard() {
     queryFn: () => api.leaderboard(selectedYear as number, DEFAULT_SCOPE),
     enabled: selectedYear != null,
   })
-  const needsTeamRoutes = selectedMetric !== 'totalTravel'
+  const needsTeamRoutes =
+    selectedMetric !== 'totalTravel' && selectedMetric !== 'averageTravel'
   const needsYearMovements = MOVEMENT_DETAIL_METRICS.includes(selectedMetric)
   const teamRouteQueries = useQueries({
     queries: (teamsQuery.data ?? []).map((team) => ({
@@ -278,6 +275,10 @@ function Dashboard() {
     [arcs, averageDivisor, isAllYears, points, totalTravelKm, urlState.team],
   )
   const selectedMetricConfig = getTravelKpiMetricConfig(selectedMetric)
+  const teamChartMetricLabel =
+    selectedMetric === 'averageTravel' ? 'Distance per team' : selectedMetricConfig.label
+  const yearChartMetricLabel =
+    selectedMetric === 'averageTravel' ? 'Average per team' : selectedMetricConfig.label
   const teamChartEntries = useMemo<TeamChartEntry[] | undefined>(() => {
     if (isAllYears) {
       const movements = allMovementsQuery.data
@@ -286,12 +287,12 @@ function Dashboard() {
       return buildAllYearsTeamEntries(movements, selectedMetric)
     }
 
-    if (selectedMetric === 'totalTravel') {
+    if (selectedMetric === 'totalTravel' || selectedMetric === 'averageTravel') {
       const entries = leaderboardQuery.data?.entries.map((entry) => ({
         teamId: entry.team_id,
         teamName: entry.team_name,
         value: entry.total_distance_km,
-        valueLabel: formatMetricValue(entry.total_distance_km, selectedMetric),
+        valueLabel: formatMetricValue(entry.total_distance_km, 'totalTravel'),
       }))
       return entries ? sortTeamChartEntries(entries) : undefined
     }
@@ -461,7 +462,7 @@ function Dashboard() {
         <TeamTravelChart
           entries={teamChartEntries}
           selectedTeamId={isAllYears ? null : urlState.team}
-          metricLabel={selectedMetricConfig.label}
+          metricLabel={teamChartMetricLabel}
           onSelectTeam={handleTeamSelect}
         />
       </aside>
@@ -470,7 +471,7 @@ function Dashboard() {
         <YearTravelChart
           entries={yearChartEntries}
           selectedYear={urlState.year}
-          metricLabel={selectedMetricConfig.label}
+          metricLabel={yearChartMetricLabel}
           onSelectYear={handleYearSelect}
         />
       </aside>
