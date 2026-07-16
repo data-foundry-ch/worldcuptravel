@@ -6,7 +6,6 @@ import json
 import logging
 import shutil
 import subprocess
-import sys
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -16,6 +15,16 @@ from app.services.venue_enrichment import build_venue_coverage_report
 from app.settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
+
+
+def _dbt_executable() -> str:
+    """Return the dbt CLI path installed by dbt-core (not runnable via python -m dbt)."""
+    dbt = shutil.which("dbt")
+    if dbt:
+        return dbt
+    raise RuntimeError(
+        "dbt executable not found on PATH. Install dbt-core and dbt-duckdb."
+    )
 
 
 def run_dbt_build(settings: Settings | None = None) -> dict[str, object]:
@@ -32,9 +41,7 @@ def run_dbt_build(settings: Settings | None = None) -> dict[str, object]:
 
     result = subprocess.run(
         [
-            sys.executable,
-            "-m",
-            "dbt",
+            _dbt_executable(),
             "build",
             "--project-dir",
             str(analytics_dir),

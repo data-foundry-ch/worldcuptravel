@@ -11,6 +11,7 @@ interface YearTravelChartProps {
   entries: YearChartEntry[] | undefined
   selectedYear: number | 'all' | null
   metricLabel: string
+  allowAllYears?: boolean
   onSelectYear: (year: number | 'all') => void
 }
 
@@ -18,6 +19,7 @@ export function YearTravelChart({
   entries,
   selectedYear,
   metricLabel,
+  allowAllYears = true,
   onSelectYear,
 }: YearTravelChartProps) {
   if (!entries?.length) return null
@@ -29,14 +31,16 @@ export function YearTravelChart({
       <div className="year-chart__header">
         <div>
           <span>{metricLabel} per World Cup</span>
-          <button
-            type="button"
-            className={`year-chart__all ${selectedYear === 'all' ? 'year-chart__all--selected' : ''}`}
-            onClick={() => onSelectYear('all')}
-            aria-pressed={selectedYear === 'all'}
-          >
-            All years
-          </button>
+          {allowAllYears && (
+            <button
+              type="button"
+              className={`year-chart__all ${selectedYear === 'all' ? 'year-chart__all--selected' : ''}`}
+              onClick={() => onSelectYear('all')}
+              aria-pressed={selectedYear === 'all'}
+            >
+              All years
+            </button>
+          )}
         </div>
         <span className="year-chart__hint">Click a bar to load the map</span>
       </div>

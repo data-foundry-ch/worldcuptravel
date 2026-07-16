@@ -13,6 +13,7 @@ import type { YearChartEntry } from './components/YearTravelChart'
 import { YearTravelChart } from './components/YearTravelChart'
 import type { AllTournamentMovementsResponse, RouteResponse, TournamentMovementsResponse } from './types/api'
 import { useUrlState } from './hooks/useUrlState'
+import { useMediaQuery } from './hooks/useMediaQuery'
 import { downloadCsv, routeToCsv } from './utils/csvExport'
 import { formatKm } from './utils/haversine'
 import {
@@ -33,6 +34,7 @@ const queryClient = new QueryClient({
 })
 const DEFAULT_SCOPE = 'all' as const
 const DEFAULT_YEAR = 2026
+const MOBILE_MEDIA_QUERY = '(max-width: 768px)'
 const MOVEMENT_DETAIL_METRICS: TravelKpiMetric[] = ['longestLeg', 'locationCount', 'mostRepeatedRoute']
 
 function formatCount(value: number): string {
@@ -187,7 +189,8 @@ function Dashboard() {
   const [methodologyOpen, setMethodologyOpen] = useState(false)
   const [logoAvailable, setLogoAvailable] = useState(true)
   const [selectedMetric, setSelectedMetric] = useState<TravelKpiMetric>('totalTravel')
-  const isAllYears = urlState.year === 'all'
+  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY)
+  const isAllYears = !isMobile && urlState.year === 'all'
   const selectedYear = typeof urlState.year === 'number' ? urlState.year : null
 
   const reducedMotion = useMemo(
@@ -394,10 +397,10 @@ function Dashboard() {
 
   // Default to the latest tournament with usable played-route data, but let users explicitly choose a year/team.
   useEffect(() => {
-    if (!urlState.year) {
-      setUrlState({ year: DEFAULT_YEAR })
+    if (!urlState.year || (isMobile && urlState.year === 'all')) {
+      setUrlState({ year: DEFAULT_YEAR, team: null })
     }
-  }, [setUrlState, urlState.year])
+  }, [isMobile, setUrlState, urlState.year])
 
   // Validate team/year combo
   useEffect(() => {
@@ -430,6 +433,7 @@ function Dashboard() {
   }
 
   const handleYearSelect = (year: number | 'all') => {
+    if (isMobile && year === 'all') return
     setUrlState({ year, team: null })
   }
 
@@ -439,7 +443,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${isMobile ? ' app-shell--mobile' : ''}`}>
       <div className="globe-layer">
         <GlobeView
           points={points}
@@ -472,6 +476,7 @@ function Dashboard() {
           entries={yearChartEntries}
           selectedYear={urlState.year}
           metricLabel={yearChartMetricLabel}
+          allowAllYears={!isMobile}
           onSelectYear={handleYearSelect}
         />
       </aside>

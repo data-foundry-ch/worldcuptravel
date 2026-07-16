@@ -29,11 +29,13 @@ export function GlobeView({
   onPointClick,
   reducedMotion,
 }: GlobeViewProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const globeRef = useRef<{ pointOfView: (pov: object, ms?: number) => void } | null>(null)
   const [countries, setCountries] = useState<object[]>([])
   const [webglOk, setWebglOk] = useState(true)
   const [isTabVisible, setIsTabVisible] = useState(!document.hidden)
   const [hoverArc, setHoverArc] = useState<object | null>(null)
+  const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight })
 
   useEffect(() => {
     try {
@@ -42,6 +44,28 @@ export function GlobeView({
       setWebglOk(!!gl)
     } catch {
       setWebglOk(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const updateDimensions = () => {
+      const { width, height } = container.getBoundingClientRect()
+      if (width > 0 && height > 0) {
+        setDimensions({ width: Math.round(width), height: Math.round(height) })
+      }
+    }
+
+    updateDimensions()
+    const observer = new ResizeObserver(updateDimensions)
+    observer.observe(container)
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateDimensions)
     }
   }, [])
 
@@ -75,7 +99,7 @@ export function GlobeView({
 
   if (!webglOk) {
     return (
-      <div className="globe-fallback">
+      <div className="globe-fallback" ref={containerRef}>
         <p>3D globe unavailable (WebGL not supported). Use the itinerary table below.</p>
       </div>
     )
@@ -84,53 +108,55 @@ export function GlobeView({
   const animateArcs = arcs.length > 0 && !reducedMotion && isTabVisible
 
   return (
-    <Suspense fallback={<div className="globe-loading">Loading globe…</div>}>
-      <Globe
-        ref={globeRef as never}
-        width={window.innerWidth}
-        height={window.innerHeight}
-        backgroundColor="rgba(0,0,0,0)"
-        globeImageUrl="/earth_at_night.jpg"
-        bumpImageUrl={null}
-        showAtmosphere
-        atmosphereColor="rgba(120,160,220,0.25)"
-        atmosphereAltitude={0.12}
-        polygonsData={countries}
-        polygonCapColor={() => 'rgba(40, 48, 58, 0.55)'}
-        polygonSideColor={() => 'rgba(20, 24, 30, 0.2)'}
-        polygonStrokeColor={() => 'rgba(100, 120, 140, 0.35)'}
-        polygonAltitude={0.003}
-        pointsData={points}
-        pointLat="lat"
-        pointLng="lng"
-        pointAltitude={0.003}
-        pointRadius={0.18}
-        pointColor={(d: object) => {
-          const p = d as GlobePoint
-          return p.isProjected ? 'rgba(120, 200, 255, 0.9)' : 'rgba(198, 159, 73, 0.95)'
-        }}
-        pointLabel={(d: object) => (d as GlobePoint).label}
-        onPointClick={(d: object) => onPointClick((d as GlobePoint).id)}
-        arcsData={arcs}
-        arcStartLat="startLat"
-        arcStartLng="startLng"
-        arcEndLat="endLat"
-        arcEndLng="endLng"
-        arcAltitude={(d: object) => (d as GlobeArc).arcAltitude}
-        arcLabel={(d: object) => formatArcLabel(d as GlobeArc)}
-        arcColor={(d: object) => {
-          const op = !hoverArc ? OPACITY : d === hoverArc ? 0.9 : OPACITY / 4
-          return [`rgba(198, 159, 73, ${op})`, `rgba(54, 40, 17, ${op})`]
-        }}
-        arcStroke={0.2}
-        arcDashLength={animateArcs ? 0.80 : 1}
-        arcDashGap={0.05}
-        arcDashInitialGap={(d: object) => ((d as GlobeArc).legNumber % 8) * 0.08}
-        arcDashAnimateTime={animateArcs ? 7500 : 0}
-        arcsTransitionDuration={0}
-        onArcHover={(d: object | null) => setHoverArc(d)}
-        animateIn={!reducedMotion}
-      />
-    </Suspense>
+    <div className="globe-view" ref={containerRef}>
+      <Suspense fallback={<div className="globe-loading">Loading globe…</div>}>
+        <Globe
+          ref={globeRef as never}
+          width={dimensions.width}
+          height={dimensions.height}
+          backgroundColor="rgba(0,0,0,0)"
+          globeImageUrl="/earth_at_night.jpg"
+          bumpImageUrl={null}
+          showAtmosphere
+          atmosphereColor="rgba(120,160,220,0.25)"
+          atmosphereAltitude={0.12}
+          polygonsData={countries}
+          polygonCapColor={() => 'rgba(40, 48, 58, 0.55)'}
+          polygonSideColor={() => 'rgba(20, 24, 30, 0.2)'}
+          polygonStrokeColor={() => 'rgba(100, 120, 140, 0.35)'}
+          polygonAltitude={0.003}
+          pointsData={points}
+          pointLat="lat"
+          pointLng="lng"
+          pointAltitude={0.003}
+          pointRadius={0.18}
+          pointColor={(d: object) => {
+            const p = d as GlobePoint
+            return p.isProjected ? 'rgba(120, 200, 255, 0.9)' : 'rgba(198, 159, 73, 0.95)'
+          }}
+          pointLabel={(d: object) => (d as GlobePoint).label}
+          onPointClick={(d: object) => onPointClick((d as GlobePoint).id)}
+          arcsData={arcs}
+          arcStartLat="startLat"
+          arcStartLng="startLng"
+          arcEndLat="endLat"
+          arcEndLng="endLng"
+          arcAltitude={(d: object) => (d as GlobeArc).arcAltitude}
+          arcLabel={(d: object) => formatArcLabel(d as GlobeArc)}
+          arcColor={(d: object) => {
+            const op = !hoverArc ? OPACITY : d === hoverArc ? 0.9 : OPACITY / 4
+            return [`rgba(198, 159, 73, ${op})`, `rgba(54, 40, 17, ${op})`]
+          }}
+          arcStroke={0.2}
+          arcDashLength={animateArcs ? 0.80 : 1}
+          arcDashGap={0.05}
+          arcDashInitialGap={(d: object) => ((d as GlobeArc).legNumber % 8) * 0.08}
+          arcDashAnimateTime={animateArcs ? 7500 : 0}
+          arcsTransitionDuration={0}
+          onArcHover={(d: object | null) => setHoverArc(d)}
+          animateIn={!reducedMotion}
+        />
+      </Suspense>
+    </div>
   )
 }
